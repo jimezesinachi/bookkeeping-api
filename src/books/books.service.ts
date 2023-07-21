@@ -1,9 +1,20 @@
-import { Model } from 'mongoose';
+import { Model, QueryOptions } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './schemas/book.schema';
 import { CreateBookDto } from './dto/create.book.dto';
 import { GetAllBooksQueryDto, UpdateBookDto } from './dto';
+
+interface GetAllBooks {
+  books: Book[];
+  totalBooks: number;
+  totalPages: number;
+  currentPage: number;
+  itemsReturnedPerPage: number;
+  title: string;
+  author: string;
+  availability: boolean;
+}
 
 @Injectable()
 export class BookService {
@@ -13,8 +24,42 @@ export class BookService {
     return await new this.bookModel(createBookDto).save();
   }
 
-  async findAll(query: GetAllBooksQueryDto): Promise<Book[]> {
-    return await this.bookModel.find(query).exec();
+  async findAll(query: GetAllBooksQueryDto): Promise<GetAllBooks> {
+    const { page = 1, perPage = 10, title, author, availability } = query;
+
+    const findOptions: QueryOptions = {};
+
+    if (title) {
+      findOptions['title'] = { $regex: new RegExp(title, 'i') };
+    }
+
+    if (author) {
+      findOptions['author'] = { $regex: new RegExp(author, 'i') };
+    }
+
+    if (availability) {
+      findOptions['availability'] = availability;
+    }
+
+    const totalBooks = await this.bookModel.countDocuments(findOptions);
+    const totalPages = Math.ceil(totalBooks / perPage);
+
+    const books = await this.bookModel
+      .find(findOptions)
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .exec();
+
+    return {
+      books,
+      totalBooks,
+      totalPages,
+      currentPage: page,
+      itemsReturnedPerPage: perPage,
+      title,
+      author,
+      availability,
+    };
   }
 
   async findOne(id: string) {
@@ -35,37 +80,3 @@ export class BookService {
     });
   }
 }
-
-// private books: Book[] = [];
-
-// createBook(book: Book): Book {
-//   this.books.push(book);
-
-//   book.id;
-
-//   return book;
-// }
-
-// getAllBooks(): Book[] {
-//   return this.books;
-// }
-
-// getOneBook(id: string): Book {
-//   return this.books.find((book) => book.id === id);
-// }
-
-// updateBook(id: string, book: Book): Book {
-//   this.books = this.books.map((oldBook) => {
-//     if (oldBook.id === id) return book;
-//   });
-
-//   return book;
-// }
-
-// deleteBook(id: string): Book {
-//   const book = this.books.find((book) => book.id === id);
-
-//   this.books = this.books.filter((book) => book.id !== id);
-
-//   return book;
-// }

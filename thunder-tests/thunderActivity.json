@@ -108,12 +108,12 @@
         "method": "POST",
         "sortNum": 0,
         "created": "2023-07-21T11:52:59.741Z",
-        "modified": "2023-07-21T14:41:36.689Z",
+        "modified": "2023-07-21T14:56:07.618Z",
         "headers": [],
         "params": [],
         "body": {
             "type": "json",
-            "raw": "{\n  \"title\": \"Book 1\",\n  \"author\": \"Author 1\",\n  \"genre\": \"Genre 1\",\n  \"price\": 1,\n  \"availability\": true\n}\n",
+            "raw": "{\n  \"title\": \"Puppy Jay\",\n  \"author\": \"Jaydon K\",\n  \"genre\": \"Thriller\",\n  \"price\": 500,\n  \"availability\": true\n}\n",
             "form": []
         },
         "tests": []
@@ -142,13 +142,24 @@
         "colId": "history",
         "containerId": "",
         "name": "Get All",
-        "url": "http://localhost:3000/books",
+        "url": "http://localhost:3000/books?page=2&perPage=1",
         "method": "GET",
         "sortNum": 0,
         "created": "2023-07-21T12:03:59.898Z",
-        "modified": "2023-07-21T14:38:12.548Z",
+        "modified": "2023-07-21T16:00:20.932Z",
         "headers": [],
-        "params": [],
+        "params": [
+            {
+                "name": "page",
+                "value": "2",
+                "isPath": false
+            },
+            {
+                "name": "perPage",
+                "value": "1",
+                "isPath": false
+            }
+        ],
         "tests": []
     },
     {
